@@ -1,0 +1,11 @@
+reversed.txt: Heap_sort este de: 8.3898ori mai bun de cat merge sort pentru 10000000 numere
+
+sorted.txt: Heap_sort este de: 7.31753ori mai bun de cat merge sort pentru 10000000 numere
+
+random.txt: Heap_sort este de: 7.68226ori mai bun de cat merge sort pentru 10000000 numere
+
+Insertion este de: 40.9109ori mai bun de cat heap sort pentru 10000 numere
+Insertion este de: 47.8714ori mai bun de cat radix sort pentru 10000 numere
+
+Insertion este de: 46.841ori mai bun de cat heap sort pentru 100000 numere
+Insertion este de: 40.6823ori mai bun de cat radix sort pentru 100000 numere

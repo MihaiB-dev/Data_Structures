@@ -7,14 +7,15 @@
 using namespace std;
 
 #define TEST_INPUT_NUMBER 3
-#define SORT_NUMBER 4 //need to be 5
-#define NUMBER_TESTS 1
+#define SORT_NUMBER 5 //need to be 5
+#define NUMBER_TESTS 4
 #define POWER_10 4 //starts from 10^4 and goes to 10^4*(10^3)
 //global arrays for each sort algorithm
 float V_merge[TEST_INPUT_NUMBER][NUMBER_TESTS*POWER_10];
 float V_shell[TEST_INPUT_NUMBER][NUMBER_TESTS*POWER_10];
 float V_insertion[TEST_INPUT_NUMBER][NUMBER_TESTS*POWER_10];
 float V_heap[TEST_INPUT_NUMBER][NUMBER_TESTS*POWER_10];
+float V_radix[TEST_INPUT_NUMBER][NUMBER_TESTS*POWER_10];
 
 void merge_function(long inceput, long sfarsit,long mid, long v[]){
     long i = inceput, j = mid+1, k = 0;
@@ -132,7 +133,33 @@ void heap_sort(long n, long v[])
     }
 }
 //end heap_sort ----------------------
+int Max(long v[], long n){
+    int max = v[0];
+    for(int i = 0;i<n; i++) if (v[i]> max) max = v[i];
+    return max;
+    }
+void countSort(long n, long v[], long poz)
+{
+    int max = 10;
+    int bucket[n], count[max] ={0};
 
+    for(int i = 0; i < n; i++) count[(v[i]/poz)%10]++; //calculam un contor pentru elemente
+
+    for(int i = 1; i < max; i++) count[i] += count[i-1]; 
+
+    for(int i = n - 1; i>= 0; i--) //punem elementele in ordinea buna, descrescator
+    {
+        bucket[count[(v[i]/poz)%10] - 1] = v[i];
+        count[(v[i]/poz)%10]--;
+    }
+
+    for(int i = 0; i < n; i++) v[i]= bucket[i];
+}
+void radix_sort(long n, long v[])
+{  
+    long max = Max(v,n);
+    for (int poz = 1; max/poz > 0; poz*=10) countSort(n,v,poz);
+}
 //create an array for each sorting algorithm 
 void calculate_merge_sort(int i, int j, long SIZE, long v[]){   
     //start the clock
@@ -178,6 +205,17 @@ void calculate_heap_sort(int i, int j, long SIZE, long v[])
 
     V_heap[i][j] = elapsed.count()* 1e-9;
 }
+void calculate_radix_sort(int i, int j, long SIZE, long v[])
+{
+    auto begin = std::chrono::high_resolution_clock::now();
+    radix_sort(SIZE,v);
+
+    //end the clock
+    auto end = std::chrono::high_resolution_clock::now();
+    auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
+
+    V_radix[i][j] = elapsed.count()* 1e-9;
+}
 
 void create_time_vectors(string ultra_tester[], string sort_algorithm[]){
     progressbar bar(TEST_INPUT_NUMBER*POWER_10*NUMBER_TESTS*SORT_NUMBER);
@@ -204,6 +242,8 @@ void create_time_vectors(string ultra_tester[], string sort_algorithm[]){
                             {calculate_insertion_sort(i,j,SIZE,v);}
                         else if(sort_algorithm[sort] == "heap_sort")
                             {calculate_heap_sort(i,j,SIZE,v);}
+                        else if(sort_algorithm[sort] == "radix_sort")
+                            {calculate_radix_sort(i,j,SIZE,v);}
                         delete [] v;
                         //cout << "Test " << each_test << ", time for " +  sort_algorithm[sort] + " using " + ultra_tester[poz] + " is : "<< elapsed.count()* 1e-9 << " seconds"<<endl;
                     }
@@ -218,12 +258,59 @@ void create_time_vectors(string ultra_tester[], string sort_algorithm[]){
         i++;
     }
 }
+
+void template_write_vector(float v[][NUMBER_TESTS*POWER_10],string ultra_tester[],ofstream& fout)
+{ 
+    for(int a = 0; a < TEST_INPUT_NUMBER; a++)
+                    {   fout << ultra_tester[a] << ": "<<endl;
+                        for(int input = 0; input < POWER_10; input ++)
+                            {   float sum = 0;
+                                fout << pow(10.0,POWER_10) * pow(10.0,input)<< ": ";
+                                for(int number=input * NUMBER_TESTS; number < input * NUMBER_TESTS + NUMBER_TESTS; number++ )
+                                {
+                                    sum += v[a][number];
+                                    fout << v[a][number] << " ";
+                                }
+                                fout << "Avg: " << sum/NUMBER_TESTS << endl;
+                            }
+                        fout<<endl;
+                        
+                    }
+    fout << endl;
+}
+void write_time_vectors(string ultra_tester[], string sort_algorithm[])
+{   ofstream fout("statistic.txt");
+    progressbar vbar(TEST_INPUT_NUMBER*NUMBER_TESTS*POWER_10);
+    for(int sort = 0; sort< SORT_NUMBER; sort++)
+        {
+            fout<<sort_algorithm[sort]<<":"<<endl<<endl;
+            // if (sort_algorithm[sort] == "merge_sort") 
+            //     {template_write_vector(V_merge,ultra_tester,fout);}
+            // else if (sort_algorithm[sort] == "shell_sort") 
+                {template_write_vector(V_shell,ultra_tester,fout);}
+             if(sort_algorithm[sort] == "insertion_sort")
+                {template_write_vector(V_insertion,ultra_tester,fout);}
+            else if(sort_algorithm[sort] == "heap_sort")
+                {template_write_vector(V_heap,ultra_tester,fout);}
+            else if(sort_algorithm[sort] == "radix_sort")
+                {template_write_vector(V_radix,ultra_tester,fout);}
+            // {for(int j = 0; j< NUMBER_TESTS*POWER_10; j++)
+            //     {
+            //         vbar.update();
+            //         fout<<V_merge[i][j]<<" ";
+            //     }
+            
+        fout<<endl;
+        }
+}
 int main(){
-    
-    string ultra_tester[TEST_INPUT_NUMBER] = {"reversed_10000000.txt","sorted_10000000.txt","random_10000000.txt"};
-    string sort_algorithm[SORT_NUMBER] = {"merge_sort","shell_sort","insertion_sort","heap_sort"};
+    string ultra_tester[TEST_INPUT_NUMBER] = {"reversed.txt","sorted.txt","random.txt"};
+    string sort_algorithm[SORT_NUMBER] = {"merge_sort","shell_sort","insertion_sort","heap_sort","radix_sort"};
     
     create_time_vectors(ultra_tester, sort_algorithm); //aceasat functie va popula vectorii globali cu timpurile de la fiecare algoritm de sortare.
+    
+    write_time_vectors(ultra_tester,sort_algorithm);
+
     //Vectori: V_merge , 
     //Explicatie:
     
@@ -238,9 +325,61 @@ int main(){
     // daca 10<j<19 -> facut pe 100.000 de numere
     // daca 20<j<29 -> facut pe 1.000.000 de numere
     // daca 30<j<39 -> facut pe 10.000.000 de numere
+    
+    //Compar Insertion sort cu Heap sort si radix sort pentru n^5 si n^4 la elementele sortate
+    // i = 1 (pentru cele sortate)
+    // ofstream fout("comparari.txt");
+    // int i = 1;
+    // for(int input = 0; input < 2; input++)//inseamna ca merge pentru n^4 si n^5
+    // {   float V_a_b[NUMBER_TESTS];
+    //     float V_c_d[NUMBER_TESTS];
+    //     int p = 0;
+    //     int u = 0;
+    //     for(int number=input * NUMBER_TESTS; number < input * NUMBER_TESTS + NUMBER_TESTS; number++ )
+    //     {
+    //         V_a_b[p++] = V_heap[i][number]/V_insertion[i][number];
+    //         V_c_d[u++] = V_radix[i][number]/V_insertion[i][number];
+    //     }
 
-    for(int i = 0; i< TEST_INPUT_NUMBER; i++)
-        {for(int j = 0; j< NUMBER_TESTS*POWER_10; j++)
-            cout<<V_merge[i][j]<<" ";
-        cout<<endl;}
+    //     float mult_a = 1;
+    //     float mult_c = 1;
+    //     for(int i = 0; i < NUMBER_TESTS;i++)
+    //     {
+    //         mult_a *= V_a_b[i];
+    //         mult_c *= V_c_d[i];
+
+    //     }
+    //     mult_a = pow(mult_a,1.0/NUMBER_TESTS);
+    //     mult_c = pow(mult_c,1.0/NUMBER_TESTS);
+    //     fout << "Insertion este de: " << mult_a << "ori mai bun de cat heap sort pentru " << pow(10.0,4) * pow(10.0,input)<<" numere"<<endl;
+    //     fout << "Insertion este de: " << mult_c << "ori mai bun de cat radix sort pentru " << pow(10.0,4) * pow(10.0,input)<<" numere"<<endl;
+    //     fout<<endl;
+    // }
+
+    // for(int s = 0; s < 3; s++)
+    // {
+    //     float V_a_b[NUMBER_TESTS];
+
+    //     int p = 0;
+
+    //     for(int number=3 * NUMBER_TESTS; number < 3 * NUMBER_TESTS + NUMBER_TESTS; number++ )
+    //     {
+    //         V_a_b[p++] = V_merge[s][number]/V_heap[s][number];
+    //     }
+
+    //     float mult_a = 1;
+
+    //     for(int i = 0; i < NUMBER_TESTS;i++)
+    //     {
+    //         mult_a *= V_a_b[i];
+
+
+    //     }
+    //     mult_a = pow(mult_a,1.0/NUMBER_TESTS);
+
+    //     fout << ultra_tester[s]<<": Heap_sort este de: " << mult_a << "ori mai bun de cat merge sort pentru " << 10000000 <<" numere"<<endl;
+
+    //     fout<<endl;
+    //}
+    
 }

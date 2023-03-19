@@ -1,8 +1,8 @@
 #include <iostream>
 #include <fstream>
-
+#include <vector>
 #include <cmath>//for heap sort
-#define NUMBER 100000
+#define NUMBER 50
 using namespace std;
 void merge_function(long inceput, long sfarsit,long mid, long v[]){
     long i = inceput, j = mid+1, k = 0;
@@ -119,16 +119,48 @@ void heap_sort(long n, long v[])
         remove(n--,v);
     }
 }
+
+int Max(long v[], long n){
+    int max = v[0];
+    for(int i = 0;i<n; i++) if (v[i]> max) max = v[i];
+    return max;
+    }
+
+void countSort(long n, long v[], long poz)
+{
+    int max = 10;
+    long bucket[n], count[max] ={0};
+
+    for(long i = 0; i < n; i++) count[(v[i]/poz)%10]++; //calculam un contor pentru elemente
+
+    for(long i = 1; i < max; i++) count[i] += count[i-1]; 
+
+    for(long  i = n - 1; i>= 0; i--) //punem elementele in ordinea buna, descrescator
+    {
+        bucket[count[(v[i]/poz)%10] - 1] = v[i];
+        count[(v[i]/poz)%10]--;
+    }
+
+    for(int i = 0; i < n; i++) v[i]= bucket[i];
+}
+void radix_sort(long n, long v[])
+{  
+    long max = Max(v,n);
+    for (int poz = 1; max/poz > 0; poz*=10) countSort(n,v,poz);
+}
+
 int main(){
-    ifstream fin("tester/random_10000000.txt");
+    ifstream fin("tester/reversed.txt");
     long v[NUMBER],p;
     for(p = 0; p < NUMBER; p++)fin >> v[p]; //citirea array-ului
 
     //add sort algorithm
     //merge_sort(0,99,v);
     //shell_sort(NUMBER,v);
-    insertion(NUMBER,v);
+    //insertion(NUMBER,v);
     //heap_sort(NUMBER,v);
-    //for(p = 0; p < NUMBER; p++)cout<< v[p]<<" ";
+    //radix_sort(NUMBER,v);
+    radixsort(v,NUMBER);
+    for(p = 0; p < NUMBER; p++)cout<< v[p]<<" ";
     return 0;
 }
