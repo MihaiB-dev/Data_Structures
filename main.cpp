@@ -2,17 +2,19 @@
 #include <fstream>
 #include <chrono> //for clock
 #include <string>
+#include <cmath>//for heap sort
 #include "progressbar.hpp" //progress bar
 using namespace std;
 
 #define TEST_INPUT_NUMBER 3
-#define SORT_NUMBER 3 //need to be 5
-#define NUMBER_TESTS 10
+#define SORT_NUMBER 4 //need to be 5
+#define NUMBER_TESTS 1
 #define POWER_10 4 //starts from 10^4 and goes to 10^4*(10^3)
 //global arrays for each sort algorithm
 float V_merge[TEST_INPUT_NUMBER][NUMBER_TESTS*POWER_10];
 float V_shell[TEST_INPUT_NUMBER][NUMBER_TESTS*POWER_10];
 float V_insertion[TEST_INPUT_NUMBER][NUMBER_TESTS*POWER_10];
+float V_heap[TEST_INPUT_NUMBER][NUMBER_TESTS*POWER_10];
 
 void merge_function(long inceput, long sfarsit,long mid, long v[]){
     long i = inceput, j = mid+1, k = 0;
@@ -47,7 +49,7 @@ void shell_sort(long n,long v[])
                 swap(v[j],v[j+gap]);
 }
 
-void insertion(long n,long v[])
+void insertion_sort(long n,long v[])
 {   int j;
     for(int i = 1; i < n; i++)
     {
@@ -61,9 +63,77 @@ void insertion(long n,long v[])
         v[j+1] = key;
     }
 }
+
+//heap_sort -------------------------
+void swap(long from, long to,long v[])
+{
+    long tmp = v[from];
+    v[from] = v[to];
+    v[to] = tmp;
+}
+
+void trickle_up(long position,long v[])
+{ 
+    if (position == 0) return;
+    long parent = floor((position-1)/2);
+    if (v[position] > v[parent]){
+        swap(position,parent,v);
+        trickle_up(parent,v);
+    }
+}
+void trickle_down(long parent,long last_position, long v[])
+{
+    long left = 2*parent+1;
+    long right = 2*parent+2;
+
+    if(left == last_position && v[parent] < v[left])
+    {
+        swap(parent,left,v);
+        return;
+    }
+    if(right == last_position && v[parent] < v[right])
+    {
+        swap(parent,right,v);
+        return;
+    }
+    if(left >= last_position || right >= last_position)return;
+
+    if(v[left] > v[right] && v[parent]<v[left])
+    {
+        swap(parent,left,v);
+        trickle_down(left,last_position,v);
+    }
+    else if(v[left] < v[right])
+    {
+        swap(parent,right,v);
+        trickle_down(right,last_position,v);
+    }
+}
+
+void create_max_heap(long last_position,long v[]){
+    long solved = 0;
+    for(long i=last_position; i> solved++; i --)trickle_up(i,v);
+}
+void remove(long last_position, long v[])
+{
+    // long tmp = v[0];
+    swap(0,last_position--,v);
+    trickle_down(0,last_position,v);
+
+}
+
+void heap_sort(long n, long v[])
+{   n--;
+    create_max_heap(n,v);
+    long i = 0;
+    while(n>=0)
+    {
+        remove(n--,v);
+    }
+}
+//end heap_sort ----------------------
+
 //create an array for each sorting algorithm 
-
-
 void calculate_merge_sort(int i, int j, long SIZE, long v[]){   
     //start the clock
     auto begin = std::chrono::high_resolution_clock::now();
@@ -97,9 +167,20 @@ void calculate_insertion_sort(int i, int j, long SIZE,long v[])
 
     V_insertion[i][j] = elapsed.count()* 1e-9;
 }
+void calculate_heap_sort(int i, int j, long SIZE, long v[])
+{
+    auto begin = std::chrono::high_resolution_clock::now();
+    heap_sort(SIZE,v);
+
+    //end the clock
+    auto end = std::chrono::high_resolution_clock::now();
+    auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
+
+    V_heap[i][j] = elapsed.count()* 1e-9;
+}
 
 void create_time_vectors(string ultra_tester[], string sort_algorithm[]){
-    progressbar bar(TEST_INPUT_NUMBER*4*10*SORT_NUMBER);
+    progressbar bar(TEST_INPUT_NUMBER*POWER_10*NUMBER_TESTS*SORT_NUMBER);
     int i = 0, j = 0; //vor ajuta la punerea valorilor in array-urile de sortari
 
     for (int poz = 0; poz < TEST_INPUT_NUMBER; poz ++) //merge prin fiecare tester 
@@ -119,9 +200,10 @@ void create_time_vectors(string ultra_tester[], string sort_algorithm[]){
                             {calculate_merge_sort(i,j,SIZE,v);}
                         else if (sort_algorithm[sort] == "shell_sort") 
                             {calculate_shell_sort(i,j,SIZE,v);}
-                        else if(sort_algorithm[sort] == "insertion_sort" && SIZE < 10000000)
+                        else if(sort_algorithm[sort] == "insertion_sort" && SIZE < 1000000)
                             {calculate_insertion_sort(i,j,SIZE,v);}
-
+                        else if(sort_algorithm[sort] == "heap_sort")
+                            {calculate_heap_sort(i,j,SIZE,v);}
                         delete [] v;
                         //cout << "Test " << each_test << ", time for " +  sort_algorithm[sort] + " using " + ultra_tester[poz] + " is : "<< elapsed.count()* 1e-9 << " seconds"<<endl;
                     }
@@ -139,7 +221,7 @@ void create_time_vectors(string ultra_tester[], string sort_algorithm[]){
 int main(){
     
     string ultra_tester[TEST_INPUT_NUMBER] = {"reversed_10000000.txt","sorted_10000000.txt","random_10000000.txt"};
-    string sort_algorithm[SORT_NUMBER] = {"merge_sort","shell_sort","insertion_sort"};
+    string sort_algorithm[SORT_NUMBER] = {"merge_sort","shell_sort","insertion_sort","heap_sort"};
     
     create_time_vectors(ultra_tester, sort_algorithm); //aceasat functie va popula vectorii globali cu timpurile de la fiecare algoritm de sortare.
     //Vectori: V_merge , 

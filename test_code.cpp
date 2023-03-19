@@ -1,5 +1,7 @@
 #include <iostream>
 #include <fstream>
+
+#include <cmath>//for heap sort
 #define NUMBER 100000
 using namespace std;
 void merge_function(long inceput, long sfarsit,long mid, long v[]){
@@ -36,8 +38,8 @@ void shell_sort(long n,long v[])
 }
 
 void insertion(long n,long v[])
-{   int j;
-    for(int i = 1; i < n; i++)
+{   long j;
+    for(long i = 1; i < n; i++)
     {
         long key = v[i];
         j = i -1;
@@ -49,14 +51,84 @@ void insertion(long n,long v[])
         v[j+1] = key;
     }
 }
+
+
+void swap(long from, long to,long v[])
+{
+    long tmp = v[from];
+    v[from] = v[to];
+    v[to] = tmp;
+}
+
+void trickle_up(long position,long v[])
+{ 
+    if (position == 0) return;
+    long parent = floor((position-1)/2);
+    if (v[position] > v[parent]){
+        swap(position,parent,v);
+        trickle_up(parent,v);
+    }
+}
+void trickle_down(long parent,long last_position, long v[])
+{
+    long left = 2*parent+1;
+    long right = 2*parent+2;
+
+    if(left == last_position && v[parent] < v[left])
+    {
+        swap(parent,left,v);
+        return;
+    }
+    if(right == last_position && v[parent] < v[right])
+    {
+        swap(parent,right,v);
+        return;
+    }
+    if(left >= last_position || right >= last_position)return;
+
+    if(v[left] > v[right] && v[parent]<v[left])
+    {
+        swap(parent,left,v);
+        trickle_down(left,last_position,v);
+    }
+    else if(v[left] < v[right])
+    {
+        swap(parent,right,v);
+        trickle_down(right,last_position,v);
+    }
+}
+
+void create_max_heap(long last_position,long v[]){
+    long solved = 0;
+    for(long i=last_position; i> solved++; i --)trickle_up(i,v);
+}
+void remove(long last_position, long v[])
+{
+    // long tmp = v[0];
+    swap(0,last_position--,v);
+    trickle_down(0,last_position,v);
+
+}
+
+void heap_sort(long n, long v[])
+{   n--;
+    create_max_heap(n,v);
+    long i = 0;
+    while(n>=0)
+    {
+        remove(n--,v);
+    }
+}
 int main(){
-    ifstream fin("tester/reversed_10000000.txt");
+    ifstream fin("tester/random_10000000.txt");
     long v[NUMBER],p;
     for(p = 0; p < NUMBER; p++)fin >> v[p]; //citirea array-ului
 
     //add sort algorithm
     //merge_sort(0,99,v);
     //shell_sort(NUMBER,v);
-    //insertion(NUMBER,v);
-    for(p = 0; p < NUMBER; p++)cout<< v[p]<<" ";
+    insertion(NUMBER,v);
+    //heap_sort(NUMBER,v);
+    //for(p = 0; p < NUMBER; p++)cout<< v[p]<<" ";
+    return 0;
 }
