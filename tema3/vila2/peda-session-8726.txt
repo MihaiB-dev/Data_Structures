@@ -1,5 +1,0 @@
-break deque.cpp:50
-break paranteze.cpp:38
-break vila2.cpp:48
-
-set exec-wrapper The wrapper for running programs is \
