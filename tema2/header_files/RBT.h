@@ -2,10 +2,10 @@ class Node {
     public:
     int value;
     Node *left,*right,*parent;
-    bool isLeftChild, black; 
+    bool isLeftChild, black, doubleBlack; 
 
-    Node(int fc_value): value(fc_value), left(NULL), right(NULL), parent(NULL), black(false), isLeftChild(false){};
-    Node(): value(0), left(NULL), right(NULL), parent(NULL), black(false), isLeftChild(false){};
+    Node(int fc_value): value(fc_value), left(NULL), right(NULL), parent(NULL), black(false), isLeftChild(false), doubleBlack(false){};
+    Node(): value(0), left(NULL), right(NULL), parent(NULL), black(false), isLeftChild(false), doubleBlack(false){};
     Node& operator=(Node& node)
     {
         value = node.value;
@@ -14,6 +14,7 @@ class Node {
         parent = node.parent;
         black = node.black;
         isLeftChild = node.isLeftChild;
+        doubleBlack = node.doubleBlack;
         return *this;
     };
 
@@ -47,13 +48,14 @@ private:
     //-------------------------------------
 
     void add_deep( Node* parent, Node* newNode); 
-    Node* remove_private(Node* node);
+    void remove_private(Node* node);
     Node* find_private(Node* node, int val);
     int height(Node* node);
     Node* succesor(Node* node);
     Node* predecessor(Node* node);
     void inOrder(Node* node,int min, int max);
-    void check_after_remove(bool removed_black,Node* node, int last_left, int last_right);
+    void check_before_remove(Node* node);
+    void handleDoubleBlack(Node* node,bool isLeftChild);
 public:
     void add (int fc_value);
     void remove(int value);

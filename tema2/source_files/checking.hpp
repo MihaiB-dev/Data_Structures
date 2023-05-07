@@ -44,6 +44,6 @@ void RedBlackTree::checkColor(Node* node){
     if(node == root){return;} // we will get up on the tree till we are at the root node.
     if(!node->black && !node->parent->black) //if 2 consecutive reds
         {corectTree(node);}
-    int black = blackNodes(node); // verify if there are the same number of black nodes on each side.
+    blackNodes(node); // verify if there are the same number of black nodes on each side.
     if(node->parent){checkColor(node->parent);}; //recursive function which goes up to the parent.}
 };
