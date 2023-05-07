@@ -6,10 +6,10 @@
 #include "progressbar.hpp" //progress bar
 using namespace std;
 
-#define TEST_INPUT_NUMBER 3
+#define TEST_INPUT_NUMBER 3 // cate fisiere de inputuri vrei sa puneti (default 3)
 #define SORT_NUMBER 5 //need to be 5
-#define NUMBER_TESTS 4
-#define POWER_10 4 //starts from 10^4 and goes to 10^4*(10^3)
+#define NUMBER_TESTS 1 //cate teste vreti sa se faca pentru fiecare sortare
+#define POWER_10 3 //starts from 10^4 and goes to 10^4*(10^3)
 //global arrays for each sort algorithm
 float V_merge[TEST_INPUT_NUMBER][NUMBER_TESTS*POWER_10];
 float V_shell[TEST_INPUT_NUMBER][NUMBER_TESTS*POWER_10];
@@ -304,7 +304,7 @@ void write_time_vectors(string ultra_tester[], string sort_algorithm[])
         }
 }
 int main(){
-    string ultra_tester[TEST_INPUT_NUMBER] = {"reversed.txt","sorted.txt","random.txt"};
+    string ultra_tester[TEST_INPUT_NUMBER] = {"reversed.txt","sorted.txt","random.txt"}; //puteti sa adaugati cate input-uri doriti, sa aveti grija sa sa aiba size-ul respectiv lui 10^4*10^POWER_10 numere. si sa se schimbe test_input_number respectiv la cate imput-uri aveti. 
     string sort_algorithm[SORT_NUMBER] = {"merge_sort","shell_sort","insertion_sort","heap_sort","radix_sort"};
     
     create_time_vectors(ultra_tester, sort_algorithm); //aceasat functie va popula vectorii globali cu timpurile de la fiecare algoritm de sortare.
@@ -320,6 +320,7 @@ int main(){
     //i=0 Reversed [0,...9,10,...19,20,...,29,30,...,39] 
     //i=1 Sorted   [----------//-----------------------]
     //i=2 Random   [----------//-----------------------] 
+
     //Fiecare pozitie v[i][j] semnifica testul j%10 pentru test_input i
     // daca 0<j<9 -> facut pe 10.000 de numere
     // daca 10<j<19 -> facut pe 100.000 de numere

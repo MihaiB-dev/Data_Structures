@@ -2,7 +2,8 @@
 #include <fstream>
 #include <vector>
 #include <cmath>//for heap sort
-#define NUMBER 50
+#define NUMBER 1000000
+
 using namespace std;
 void merge_function(long inceput, long sfarsit,long mid, long v[]){
     long i = inceput, j = mid+1, k = 0;
@@ -129,7 +130,7 @@ int Max(long v[], long n){
 void countSort(long n, long v[], long poz)
 {
     int max = 10;
-    long bucket[n], count[max] ={0};
+    long bucket[n], count[max] = {0};
 
     for(long i = 0; i < n; i++) count[(v[i]/poz)%10]++; //calculam un contor pentru elemente
 
@@ -159,8 +160,8 @@ int main(){
     //shell_sort(NUMBER,v);
     //insertion(NUMBER,v);
     //heap_sort(NUMBER,v);
-    //radix_sort(NUMBER,v);
-    radixsort(v,NUMBER);
-    for(p = 0; p < NUMBER; p++)cout<< v[p]<<" ";
+    radix_sort(NUMBER,v);
+   
+    // for(p = 0; p < NUMBER; p++)cout<< v[p]<<" ";
     return 0;
 }
