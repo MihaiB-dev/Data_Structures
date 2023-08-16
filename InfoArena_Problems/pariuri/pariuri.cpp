@@ -6,28 +6,28 @@ using namespace std;
 int main(){
     ifstream fin("pariuri.in"); ofstream fout("pariuri.out");
     short N,M;
-    unordered_map<long, long> timp_sume;
-    long timp;
-    int suma;
+    unordered_map<long, long> time_sum;
+    long time;
+    int sum;
     fin>>N;
     for(short i = 0; i < N; i ++)
     {
         fin>>M;
         for(short j = 0; j < M; j++)
         {
-            fin >> timp >> suma;
-            if(timp_sume.find(timp) == timp_sume.end())
+            fin >> time >> sum;
+            if(time_sum.find(time) == time_sum.end())
             {
-                timp_sume[timp] = suma;
+                time_sum[time] = sum;
             }
             else
             {
-                timp_sume[timp] +=suma;
+                time_sum[time] +=sum;
             }
         }
     }
-    fout<<timp_sume.size()<<endl;
-    for (auto& it: timp_sume) {
+    fout<<time_sum.size()<<endl;
+    for (auto& it: time_sum) {
     fout << it.first << " "<<it.second << " ";
 }
     return 0;
