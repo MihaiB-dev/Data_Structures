@@ -56,6 +56,8 @@ private:
     void inOrder(Node* node,int min, int max);
     void check_before_remove(Node* node);
     void handleDoubleBlack(Node* node,bool isLeftChild);
+    int predecessor_not_in_RBT(Node* node,int val);
+    int pred_not_in_RBT(int val);
 public:
     void add (int fc_value);
     void remove(int value);

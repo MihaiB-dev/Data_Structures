@@ -1,5 +1,6 @@
 #include <iostream>
 #include <queue>
+#include <climits>
 #include <fstream>
 
 using namespace std;
@@ -35,23 +36,6 @@ int main(){
         }
         //case 6 , we add another int nr2;
     }
-    // tree.add(3);
-    // tree.add(1);
-    // tree.add(5);
-    // tree.add(7);
-    // tree.add(6);
-    // tree.add(8);
-    // tree.add(9);
-    // tree.add(10);
-
-
-
-    // cout << tree.find(10);
-
-    //tree.remove(3);
-    // cout << tree.succ(3)<<endl;
-    // cout << tree.pred(1)<<endl;
-    // tree.inOrder(5,7);
     // tree.print();
     return 0;
 }

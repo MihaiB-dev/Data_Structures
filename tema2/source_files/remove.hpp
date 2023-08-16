@@ -18,6 +18,8 @@ void RedBlackTree::handleDoubleBlack(Node* node,bool isLeftChild)//first is pare
     //near child to Db is red :
     //swap colors of Db's sibling & siblings chil who is near to Db
     //rotate sibling in oposite direction to apply case 6
+
+    //ADD case 6
     if(node->right && 
         node->right->black == true && isLeftChild == true) //CASE 3
         {if((node->right->left == NULL && node->right->right == NULL)
