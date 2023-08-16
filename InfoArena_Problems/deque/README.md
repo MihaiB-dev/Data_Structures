@@ -1,4 +1,7 @@
 # Deque
+
+***Link: https://www.infoarena.ro/problema/deque***
+
 Given a string A with N integers. For each subsequence of length K determine the minimum, and then calculate the sum of these minimums.
 
 ### Requirement
