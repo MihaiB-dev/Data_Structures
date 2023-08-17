@@ -2,9 +2,11 @@
 #include <fstream>
 #include <vector>
 #include <cmath>//for heap sort
-#define NUMBER 1000000
+#define NUMBER 100
 
 using namespace std;
+
+//  Start merge Sort -----------------------
 void merge_function(long inceput, long sfarsit,long mid, long v[]){
     long i = inceput, j = mid+1, k = 0;
     long *temp = new long[sfarsit-inceput+1];
@@ -29,7 +31,9 @@ void merge_sort(long inceput,long sfarsit,long v[]){
         merge_function(inceput,sfarsit,mijloc, v);
     }
 }
+// End merge Sort -----------------------
 
+//Start Shell sort ----------------------
 void shell_sort(long n,long v[])
 {
     for(long gap = n/2;gap > 0; gap/=2)
@@ -37,7 +41,9 @@ void shell_sort(long n,long v[])
             for(long j=i-gap;j>=0 && v[j]>v[j+gap];j-=gap)
                 swap(v[j],v[j+gap]);
 }
+//End Shell Sort -----------------------
 
+//Start Insertion Sort -----------------
 void insertion(long n,long v[])
 {   long j;
     for(long i = 1; i < n; i++)
@@ -52,8 +58,9 @@ void insertion(long n,long v[])
         v[j+1] = key;
     }
 }
+//End insertion sort--------------------
 
-
+//Start Heap Sort-----------------------
 void swap(long from, long to,long v[])
 {
     long tmp = v[from];
@@ -61,15 +68,6 @@ void swap(long from, long to,long v[])
     v[to] = tmp;
 }
 
-void trickle_up(long position,long v[])
-{ 
-    if (position == 0) return;
-    long parent = floor((position-1)/2);
-    if (v[position] > v[parent]){
-        swap(position,parent,v);
-        trickle_up(parent,v);
-    }
-}
 void trickle_down(long parent,long last_position, long v[])
 {
     long left = 2*parent+1;
@@ -98,10 +96,49 @@ void trickle_down(long parent,long last_position, long v[])
         trickle_down(right,last_position,v);
     }
 }
+//Test version: 
 
-void create_max_heap(long last_position,long v[]){
-    long solved = 0;
-    for(long i=last_position; i> solved++; i --)trickle_up(i,v);
+// void trickle_up(long position,long v[])
+// { 
+//     if (position == 0) return;
+//     long parent = floor((position-1)/2);
+//     if (v[position] > v[parent]){
+//         swap(position,parent,v);
+//         trickle_up(parent,v);
+//     }
+// }
+// void create_max_heap(long last_position,long v[]){
+//     long solved = 0;
+//     for(long i=last_position; i> solved++; i --)trickle_up(i,v);
+// }
+void heapify(long arr[], long N, int i)
+{
+    int largest = i; // Initialize largest as root
+    int l = 2 * i + 1; // left = 2*i + 1
+    int r = 2 * i + 2; // right = 2*i + 2
+
+    if (l < N && arr[l] > arr[largest])
+        largest = l;
+ 
+    if (r < N && arr[r] > arr[largest])
+        largest = r;
+ 
+    if (largest != i) {
+        swap(arr[i], arr[largest]);
+ 
+        heapify(arr, N, largest);
+    }
+}
+ 
+// Function to build a Max-Heap from the given array
+void buildHeap(long arr[], long N)
+{
+
+    int startIdx = (N / 2) - 1;
+ 
+    for (int i = startIdx; i >= 0; i--) {
+        heapify(arr, N, i);
+    }
 }
 void remove(long last_position, long v[])
 {
@@ -112,15 +149,18 @@ void remove(long last_position, long v[])
 }
 
 void heap_sort(long n, long v[])
-{   n--;
-    create_max_heap(n,v);
+{   
+    buildHeap(v,n);
+    n--;
     long i = 0;
     while(n>=0)
     {
         remove(n--,v);
     }
 }
+//End heap sort--------------------
 
+//Start Hardix Sort -----------------
 int Max(long v[], long n){
     int max = v[0];
     for(int i = 0;i<n; i++) if (v[i]> max) max = v[i];
@@ -149,6 +189,8 @@ void radix_sort(long n, long v[])
     long max = Max(v,n);
     for (int poz = 1; max/poz > 0; poz*=10) countSort(n,v,poz);
 }
+//End Radix Sort -------------------
+
 
 int main(){
     ifstream fin("tester/reversed.txt");
@@ -160,8 +202,8 @@ int main(){
     //shell_sort(NUMBER,v);
     //insertion(NUMBER,v);
     //heap_sort(NUMBER,v);
-    radix_sort(NUMBER,v);
+    //radix_sort(NUMBER,v);
    
-    // for(p = 0; p < NUMBER; p++)cout<< v[p]<<" ";
+    for(p = 0; p < NUMBER; p++)cout<< v[p]<<" ";
     return 0;
 }

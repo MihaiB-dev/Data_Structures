@@ -6,10 +6,11 @@
 #include "progressbar.hpp" //progress bar
 using namespace std;
 
-#define TEST_INPUT_NUMBER 3 // cate fisiere de inputuri vrei sa puneti (default 3)
-#define SORT_NUMBER 5 //need to be 5
-#define NUMBER_TESTS 1 //cate teste vreti sa se faca pentru fiecare sortare
+#define TEST_INPUT_NUMBER 3 // //How many files of input you want to have (default 3)
+#define SORT_NUMBER 5 //number of Sorting Algorithms
+#define NUMBER_TESTS 10 //How many test you want to do for each Algorithm
 #define POWER_10 3 //starts from 10^4 and goes to 10^4*(10^3)
+
 //global arrays for each sort algorithm
 float V_merge[TEST_INPUT_NUMBER][NUMBER_TESTS*POWER_10];
 float V_shell[TEST_INPUT_NUMBER][NUMBER_TESTS*POWER_10];
@@ -73,15 +74,7 @@ void swap(long from, long to,long v[])
     v[to] = tmp;
 }
 
-void trickle_up(long position,long v[])
-{ 
-    if (position == 0) return;
-    long parent = floor((position-1)/2);
-    if (v[position] > v[parent]){
-        swap(position,parent,v);
-        trickle_up(parent,v);
-    }
-}
+
 void trickle_down(long parent,long last_position, long v[])
 {
     long left = 2*parent+1;
@@ -111,10 +104,36 @@ void trickle_down(long parent,long last_position, long v[])
     }
 }
 
-void create_max_heap(long last_position,long v[]){
-    long solved = 0;
-    for(long i=last_position; i> solved++; i --)trickle_up(i,v);
+void heapify(long arr[], long N, int i)
+{
+    long largest = i; // Initialize largest as root
+    long l = 2 * i + 1; // left = 2*i + 1
+    long r = 2 * i + 2; // right = 2*i + 2
+
+    if (l < N && arr[l] > arr[largest])
+        largest = l;
+ 
+    if (r < N && arr[r] > arr[largest])
+        largest = r;
+ 
+    if (largest != i) {
+        swap(arr[i], arr[largest]);
+ 
+        heapify(arr, N, largest);
+    }
 }
+ 
+// Function to build a Max-Heap from the given array
+void buildHeap(long arr[], long N)
+{
+
+    long startIdx = (N / 2) - 1;
+ 
+    for (long i = startIdx; i >= 0; i--) {
+        heapify(arr, N, i);
+    }
+}
+
 void remove(long last_position, long v[])
 {
     // long tmp = v[0];
@@ -124,9 +143,10 @@ void remove(long last_position, long v[])
 }
 
 void heap_sort(long n, long v[])
-{   n--;
-    create_max_heap(n,v);
+{   
+    buildHeap(v,n);
     long i = 0;
+    n--;
     while(n>=0)
     {
         remove(n--,v);
@@ -219,12 +239,12 @@ void calculate_radix_sort(int i, int j, long SIZE, long v[])
 
 void create_time_vectors(string ultra_tester[], string sort_algorithm[]){
     progressbar bar(TEST_INPUT_NUMBER*POWER_10*NUMBER_TESTS*SORT_NUMBER);
-    int i = 0, j = 0; //vor ajuta la punerea valorilor in array-urile de sortari
-
-    for (int poz = 0; poz < TEST_INPUT_NUMBER; poz ++) //merge prin fiecare tester 
+    int i = 0, j = 0;  //will help on putting the values in the sorted arrays
+   
+    for (int poz = 0; poz < TEST_INPUT_NUMBER; poz ++) //for each tester
     {   
         ifstream fin("tester/"+ultra_tester[poz]); //change which tester to make
-        //ofstream fout("tester/"+long_tester[poz]+"solved.txt");
+
         long SIZE = 10000;
         for (int u = 0; u < POWER_10; u ++){ //for each 10^4 10^15 10^16 10^7
             for (int each_test = 0; each_test < NUMBER_TESTS; each_test++) 
@@ -284,9 +304,9 @@ void write_time_vectors(string ultra_tester[], string sort_algorithm[])
     for(int sort = 0; sort< SORT_NUMBER; sort++)
         {
             fout<<sort_algorithm[sort]<<":"<<endl<<endl;
-            // if (sort_algorithm[sort] == "merge_sort") 
-            //     {template_write_vector(V_merge,ultra_tester,fout);}
-            // else if (sort_algorithm[sort] == "shell_sort") 
+            if (sort_algorithm[sort] == "merge_sort") 
+                {template_write_vector(V_merge,ultra_tester,fout);}
+            else if (sort_algorithm[sort] == "shell_sort") 
                 {template_write_vector(V_shell,ultra_tester,fout);}
              if(sort_algorithm[sort] == "insertion_sort")
                 {template_write_vector(V_insertion,ultra_tester,fout);}
@@ -310,22 +330,7 @@ int main(){
     create_time_vectors(ultra_tester, sort_algorithm); //aceasat functie va popula vectorii globali cu timpurile de la fiecare algoritm de sortare.
     
     write_time_vectors(ultra_tester,sort_algorithm);
-
-    //Vectori: V_merge , 
-    //Explicatie:
-    
-    //avem o matrice cu 3 lini si 30 col ce semifica:
-    // test_input|  10.000  100.000  1.000.000  10.000.000
-    //------------------------------------------------
-    //i=0 Reversed [0,...9,10,...19,20,...,29,30,...,39] 
-    //i=1 Sorted   [----------//-----------------------]
-    //i=2 Random   [----------//-----------------------] 
-
-    //Fiecare pozitie v[i][j] semnifica testul j%10 pentru test_input i
-    // daca 0<j<9 -> facut pe 10.000 de numere
-    // daca 10<j<19 -> facut pe 100.000 de numere
-    // daca 20<j<29 -> facut pe 1.000.000 de numere
-    // daca 30<j<39 -> facut pe 10.000.000 de numere
+ 
     
     //Compar Insertion sort cu Heap sort si radix sort pentru n^5 si n^4 la elementele sortate
     // i = 1 (pentru cele sortate)
