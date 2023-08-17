@@ -1,5 +1,5 @@
 void RedBlackTree::add_deep( Node* parent, Node* newNode){
-    //verify if our node is bigger or slower than  the node where we are at.
+    //verify if our node is bigger or lower than the node where we are at.
     if(newNode->value >= parent->value){//add to the right.
         if(parent->right == NULL) // create the right side if it doesn't exist
         {

@@ -56,7 +56,7 @@ public:
 
     //optional:
     bool empty();
-    void print();
+    void print(); 
 
     bool find(int val);
     
