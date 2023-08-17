@@ -13,4 +13,4 @@ In the next part, there are 4 labs:
 
 [tema1](https://github.com/MihaiB-dev/Data_Structures/tree/main/tema1) consists of multiple sorted algorithms: ***Merge Sort, Shell Sort, Insertion Sort, Heap Sort and Radix Sort***. They were all tested with 10^4 numbers till 10^8 in random format,reversed and sorted, 10 times each. More details there. Also there is a powerpoint with the final results in which all of the sorted algorithms are compared.
 
-[tema2](https://github.com/MihaiB-dev/Data_Structures/tree/main/tema2) is a construction of the ***Red Black Tree***. The remove function is the only one under development. Future updates: create a visualization using gif.
+[Red Black Tree](https://github.com/MihaiB-dev/Data_Structures/tree/main/Red_Black_Tree) is my latest project in Data Structures. The remove function is the only one under development. Future updates: create a visualization using gif.
